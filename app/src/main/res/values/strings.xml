@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CriminalIntent</string>
+    <string name="app_name">Criminal Intent</string>
     <string name="crime_title">Crime Title</string>
     <string name="solved">Solved</string>
 </resources>
