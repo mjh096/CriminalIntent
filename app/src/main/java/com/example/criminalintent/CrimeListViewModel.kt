@@ -7,11 +7,9 @@ import java.util.Date
  * ViewModel for managing the list of crimes.
  *
  * This ViewModel holds a list of [Crime] objects.
- * The list is initialized with 100 sample crimes, each with a unique title,
- * a date staggered by one day from the previous, and a solved status
- * that alternates between true and false.
  */
 class CrimeListViewModel : ViewModel() {
+    // Create dummy records
     val crimes: List<Crime> = List(100) { i ->
         Crime().apply {
             title = "Crime #$i"
