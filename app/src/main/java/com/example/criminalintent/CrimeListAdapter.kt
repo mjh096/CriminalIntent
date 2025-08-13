@@ -6,6 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * Adapter for the RecyclerView in CrimeListFragment.
+ *
+ * This adapter is responsible for creating and binding ViewHolders to display a list of [Crime] objects.
+ *
+ * @property crimes The list of [Crime] objects to be displayed.
+ */
 class CrimeListAdapter(
     private val crimes: List<Crime>
 ) : RecyclerView.Adapter<CrimeListAdapter.CrimeHolder>() {

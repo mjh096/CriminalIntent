@@ -9,6 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * A fragment that displays a list of crimes.
+ *
+ * This fragment uses a [RecyclerView] to display the list of crimes.
+ * The data for the list is provided by a [CrimeListViewModel].
+ */
 class CrimeListFragment : Fragment() {
 
     private val vm: CrimeListViewModel by viewModels()

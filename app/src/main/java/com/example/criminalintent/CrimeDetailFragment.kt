@@ -10,8 +10,14 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.core.widget.addTextChangedListener
 
+/**
+ * This fragment displays the details of a single crime and allows the user to edit them.
+ */
 class CrimeDetailFragment : Fragment() {
 
+    /**
+     * The crime being displayed.
+     */
     private lateinit var crime: Crime
 
     override fun onCreate(savedInstanceState: Bundle?) {
