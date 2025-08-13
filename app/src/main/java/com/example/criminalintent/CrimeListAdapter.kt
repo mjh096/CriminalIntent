@@ -6,24 +6,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-/**
- * Adapter for the RecyclerView in CrimeListFragment.
- *
- * This adapter is responsible for creating and binding ViewHolders to display a list of [Crime] objects.
- *
- * @property crimes The list of [Crime] objects to be displayed.
- */
 class CrimeListAdapter(
-    private val crimes: List<Crime>
+    private val crimes: List<Crime>,
+    private val onCrimeClicked: (Crime) -> Unit // ← add this parameter
 ) : RecyclerView.Adapter<CrimeListAdapter.CrimeHolder>() {
 
     class CrimeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleText: TextView = itemView.findViewById(R.id.crime_title_text)
         private val dateText: TextView = itemView.findViewById(R.id.crime_date_text)
 
-        fun bind(crime: Crime) {
+        fun bind(crime: Crime, onCrimeClicked: (Crime) -> Unit) {
             titleText.text = crime.title
             dateText.text = crime.date.toString()
+            itemView.setOnClickListener { onCrimeClicked(crime) }
         }
     }
 
@@ -34,7 +29,7 @@ class CrimeListAdapter(
     }
 
     override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
-        holder.bind(crimes[position])
+        holder.bind(crimes[position], onCrimeClicked) // ← now passes the constructor param
     }
 
     override fun getItemCount(): Int = crimes.size

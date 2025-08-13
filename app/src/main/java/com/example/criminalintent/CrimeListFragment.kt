@@ -30,6 +30,12 @@ class CrimeListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recycler = view.findViewById<RecyclerView>(R.id.crime_recycler_view)
         recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = CrimeListAdapter(vm.crimes)
+        recycler.adapter = CrimeListAdapter(vm.crimes) { crime ->
+            // Navigate to detail fragment for this crime
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, CrimeDetailFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 }
