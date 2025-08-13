@@ -8,6 +8,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.core.widget.addTextChangedListener
 
 class CrimeDetailFragment : Fragment() {
 
@@ -32,7 +33,9 @@ class CrimeDetailFragment : Fragment() {
         val solvedCheckBox = view.findViewById<CheckBox>(R.id.crime_solved)
 
         titleField.setText(crime.title)
+        titleField.addTextChangedListener { text -> crime.title = text?.toString().orEmpty()}
         dateButton.text = crime.date.toString()
         solvedCheckBox.isChecked = crime.isSolved
+        solvedCheckBox.setOnCheckedChangeListener { _, isChecked -> crime.isSolved = isChecked }
     }
 }
