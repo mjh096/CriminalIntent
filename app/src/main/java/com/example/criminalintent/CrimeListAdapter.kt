@@ -3,6 +3,7 @@ package com.example.criminalintent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -14,10 +15,14 @@ class CrimeListAdapter(
     class CrimeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleText: TextView = itemView.findViewById(R.id.crime_title_text)
         private val dateText: TextView = itemView.findViewById(R.id.crime_date_text)
+        private val solvedIcon: ImageView = itemView.findViewById(R.id.crime_solved_icon)
 
         fun bind(crime: Crime, onCrimeClicked: (Crime) -> Unit) {
             titleText.text = crime.title
             dateText.text = crime.date.toString()
+
+            solvedIcon.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
+
             itemView.setOnClickListener { onCrimeClicked(crime) }
         }
     }
