@@ -28,6 +28,10 @@ class CrimeRepository private constructor(context: Context) {
         CrimeDatabase::class.java,
         DATABASE_NAME
     )
+        // This tells Room to create the DB from your asset on FIRST RUN
+        .createFromAsset("databases/crime-database.db")
+        // For dev only: if you changed @Database(version) and don’t have migrations yet
+        .fallbackToDestructiveMigration()
         // .createFromAsset("databases/crime-database.db") // optional prepopulated DB, see note below
         .build()
 
