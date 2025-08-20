@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.stateIn
  * observed by the UI and updates automatically when the underlying data changes.
  *
  * The `crimes` StateFlow is configured to start collecting data from the repository
- * when there is at least one subscriber and to stop collecting 5 seconds after
- * the last subscriber unsubscribes. The initial value of the StateFlow is an empty list.
+ * eagerly (as soon as the ViewModel is created) and the initial value of the StateFlow is an empty list.
+ * This ensures that the latest list of crimes is always available to the UI.
  */
 class CrimeListViewModel : ViewModel() {
 

@@ -16,6 +16,7 @@ import java.util.UUID
  * The repository is implemented as a singleton to ensure only one instance exists throughout the app.
  *
  * @property db The Room database instance.
+ * @property crimeDao The Data Access Object for crime-related database operations.
  * @constructor Creates a new instance of CrimeRepository. This constructor is private to enforce singleton pattern.
  * @param context The application context, used to initialize the database.
  */

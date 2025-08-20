@@ -16,8 +16,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+
 /**
  * This fragment displays the details of a single crime and allows the user to edit them.
+ * It retrieves the crime data from the repository based on the crime ID passed as an argument
+ * and populates the UI elements with the crime's details.
+ *
+ * The fragment observes changes to the crime data and updates the UI accordingly.
  */
 class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
 

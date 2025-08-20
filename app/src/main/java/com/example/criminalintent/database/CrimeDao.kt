@@ -7,6 +7,12 @@ import com.example.criminalintent.Crime
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
+/**
+ * Data Access Object for the Crime table.
+ *
+ * This interface provides methods to interact with the Crime database.
+ * It uses Room persistence library annotations to define database operations.
+ */
 @Dao
 interface CrimeDao {
     @Query("SELECT * FROM crime ORDER BY date DESC")

@@ -8,6 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
+/**
+ * A RecyclerView.Adapter to display a list of [Crime] objects.
+ *
+ * @property crimes The list of [Crime] objects to display.
+ * @property onCrimeClicked A lambda function to be invoked when a crime item is clicked.
+ *                           It takes the clicked [Crime] object as a parameter.
+ */
 class CrimeListAdapter(
     private var crimes: List<Crime>,
     private val onCrimeClicked: (Crime) -> Unit
