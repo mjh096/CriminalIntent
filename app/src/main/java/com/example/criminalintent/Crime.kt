@@ -2,6 +2,8 @@ package com.example.criminalintent
 
 import java.util.Date
 import java.util.UUID
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Represents a single crime.
@@ -11,9 +13,10 @@ import java.util.UUID
  * @property date The date the crime occurred.
  * @property isSolved Indicates whether the crime has been solved.
  */
-class Crime {
-    val id: UUID = UUID.randomUUID()
-    var title: String = ""
-    var date: Date = Date()
+@Entity(tableName = "crime")
+data class Crime(
+    @PrimaryKey val id: UUID = UUID.randomUUID(),
+    var title: String = "",
+    var date: Date = Date(),
     var isSolved: Boolean = false
-}
+)

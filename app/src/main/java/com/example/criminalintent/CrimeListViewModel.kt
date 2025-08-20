@@ -1,20 +1,30 @@
 package com.example.criminalintent
 
 import androidx.lifecycle.ViewModel
-import java.util.Date
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 /**
  * ViewModel for managing the list of crimes.
  *
- * This ViewModel holds a list of [Crime] objects.
+ * This ViewModel holds a [StateFlow] of a list of [Crime] objects,
+ * which are fetched from the [CrimeRepository]. The list of crimes is
+ * observed by the UI and updates automatically when the underlying data changes.
+ *
+ * The `crimes` StateFlow is configured to start collecting data from the repository
+ * when there is at least one subscriber and to stop collecting 5 seconds after
+ * the last subscriber unsubscribes. The initial value of the StateFlow is an empty list.
  */
 class CrimeListViewModel : ViewModel() {
-    // Create dummy records
-    val crimes: List<Crime> = List(100) { i ->
-        Crime().apply {
-            title = "Crime #$i"
-            date = Date(System.currentTimeMillis() - i * 86_400_000L) // stagger dates
-            isSolved = (i % 2 == 0)
-        }
-    }
+    private val repo = CrimeRepository.get()
+
+    val crimes: StateFlow<List<Crime>> =
+        repo.getCrimes()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
 }

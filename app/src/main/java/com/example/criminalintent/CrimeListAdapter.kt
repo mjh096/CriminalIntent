@@ -1,5 +1,6 @@
 package com.example.criminalintent
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +9,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class CrimeListAdapter(
-    private val crimes: List<Crime>,
-    private val onCrimeClicked: (Crime) -> Unit // ← add this parameter
+    private var crimes: List<Crime>,
+    private val onCrimeClicked: (Crime) -> Unit
 ) : RecyclerView.Adapter<CrimeListAdapter.CrimeHolder>() {
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun submitList(newList: List<Crime>) {
+        crimes = newList
+        notifyDataSetChanged()
+    }
 
     class CrimeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleText: TextView = itemView.findViewById(R.id.crime_title_text)
