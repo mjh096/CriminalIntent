@@ -27,8 +27,9 @@
         android:id="@+id/crime_solved_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center_vertical"
         android:contentDescription="@string/solved"
         android:src="@drawable/ic_solved"
-        android:visibility="gone"
-        android:layout_marginEnd="8dp" />
+        android:visibility="gone" />
 </LinearLayout>
