@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -18,20 +17,31 @@ import kotlinx.coroutines.launch
  * This fragment uses a [RecyclerView] to display the list of crimes.
  * The data for the list is provided by a [CrimeListViewModel].
  */
-class CrimeListFragment : Fragment() {
+class CrimeListFragment : Fragment(R.layout.fragment_crime_list) {
+
     private val vm: CrimeListViewModel by viewModels()
     private lateinit var adapter: CrimeListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val recycler = view.findViewById<RecyclerView>(R.id.crime_recycler_view)
         recycler.layoutManager = LinearLayoutManager(requireContext())
-        adapter = CrimeListAdapter(emptyList()) { /* click -> navigate */ }
+        adapter = CrimeListAdapter(emptyList()) { crime ->
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.fragment_container,
+                    CrimeDetailFragment.newInstance(crime.id)
+                )
+                .addToBackStack(null)
+                .commit()
+        }
         recycler.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.crimes.collectLatest { list ->
-                    adapter.submitList(list)
+                vm.crimes.collect { list ->
+                    adapter.update(list)
                 }
             }
         }

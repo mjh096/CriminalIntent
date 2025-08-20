@@ -18,13 +18,15 @@ import kotlinx.coroutines.flow.stateIn
  * the last subscriber unsubscribes. The initial value of the StateFlow is an empty list.
  */
 class CrimeListViewModel : ViewModel() {
+
     private val repo = CrimeRepository.get()
 
+    // Keep latest list available to the UI
     val crimes: StateFlow<List<Crime>> =
         repo.getCrimes()
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.Eagerly,
                 initialValue = emptyList()
             )
 }
