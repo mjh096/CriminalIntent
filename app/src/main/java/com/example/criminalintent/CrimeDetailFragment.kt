@@ -1,23 +1,18 @@
 package com.example.criminalintent
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.Button
-import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.launch
-import java.util.UUID
 import androidx.navigation.fragment.navArgs
-import androidx.core.widget.doOnTextChanged
+import kotlinx.coroutines.launch
 
 
 /**
@@ -40,9 +35,6 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         val titleField = view.findViewById<EditText>(R.id.crime_title)
         val dateButton = view.findViewById<Button>(R.id.crime_date)
         val solvedBox  = view.findViewById<CheckBox>(R.id.crime_solved)
-
-        val repo = CrimeRepository.get()
-        val crimeId = args.crimeId
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

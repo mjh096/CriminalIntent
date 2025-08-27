@@ -2,11 +2,8 @@ package com.example.criminalintent.database
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Insert
 import androidx.room.Update
 import com.example.criminalintent.Crime
-import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 /**
  * Data Access Object for the Crime table.
