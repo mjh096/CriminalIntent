@@ -4,7 +4,10 @@ import com.example.criminalintent.database.CrimeDatabase
 
 import android.content.Context
 import androidx.room.Room
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 /**
@@ -22,6 +25,7 @@ import java.util.UUID
  */
 class CrimeRepository private constructor(context: Context) {
 
+    private val ioScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private val db: CrimeDatabase = Room.databaseBuilder(
         context.applicationContext,
         CrimeDatabase::class.java,
@@ -32,6 +36,7 @@ class CrimeRepository private constructor(context: Context) {
 
     fun getCrimes(): Flow<List<Crime>> = crimeDao.getCrimes()
     fun getCrime(id: UUID): Flow<Crime?> = crimeDao.getCrime(id)
+    fun updateCrime(crime: Crime) {ioScope.launch {crimeDao.updateCrime(crime)}}
     companion object {
         @Volatile private var INSTANCE: CrimeRepository? = null
 
