@@ -21,7 +21,6 @@ class CrimeListViewModel : ViewModel() {
 
     private val repo = CrimeRepository.get()
 
-    // Keep latest list available to the UI
     val crimes: StateFlow<List<Crime>> =
         repo.getCrimes()
             .stateIn(

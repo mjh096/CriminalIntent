@@ -9,6 +9,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+/**
+ * ViewModel for managing the details of a single crime.
+ *
+ * This ViewModel is responsible for fetching and updating a specific crime's data.
+ * It observes changes to the crime from the repository and provides a StateFlow
+ * for the UI to observe. It also allows for updating the crime details.
+ *
+ * @param crimeId The unique identifier of the crime to be displayed and managed.
+ */
 class CrimeDetailViewModel(crimeId: UUID) : ViewModel() {
     private val repo = CrimeRepository.get()
 
@@ -21,7 +30,11 @@ class CrimeDetailViewModel(crimeId: UUID) : ViewModel() {
         }
     }
 
-    /** UDF-friendly updater */
+    /**
+     * Updates the current crime object.
+     *
+     * @param onUpdate A lambda function that takes the current [Crime] object and returns an updated [Crime] object.
+     */
     fun updateCrime(onUpdate: (Crime) -> Crime) {
         _crime.update { old -> old?.let(onUpdate) }
     }

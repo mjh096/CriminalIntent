@@ -1,5 +1,6 @@
 package com.example.criminalintent
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,12 @@ class CrimeListAdapter(
     private val onCrimeClicked: (Crime) -> Unit
 ) : RecyclerView.Adapter<CrimeListAdapter.CrimeHolder>() {
 
+    /**
+     * Updates the list of crimes and notifies the adapter of the data change.
+     *
+     * @param list The new list of [Crime] objects to display.
+     */
+    @SuppressLint("NotifyDataSetChanged")
     fun update(list: List<Crime>) {
         crimes = list
         notifyDataSetChanged()
@@ -49,5 +56,10 @@ class CrimeListAdapter(
         holder.bind(crime) { onCrimeClicked(crime) }
     }
 
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     *
+     * @return The total number of items in this adapter.
+     */
     override fun getItemCount(): Int = crimes.size
 }

@@ -29,5 +29,8 @@ import com.example.criminalintent.Crime
 @Database(entities = [Crime::class], version = 1, exportSchema = false)
 @TypeConverters(CrimeTypeConverters::class)
 abstract class CrimeDatabase : RoomDatabase() {
+    /**
+     * @return An instance of [CrimeDao] for interacting with crime data.
+     */
     abstract fun crimeDao(): CrimeDao
 }
