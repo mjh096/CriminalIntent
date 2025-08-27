@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import java.util.UUID
+import androidx.navigation.fragment.navArgs
 
 
 /**
@@ -26,14 +27,7 @@ import java.util.UUID
  */
 class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
 
-    private lateinit var crimeId: UUID
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // If you're on SDK 33+, you can use getSerializable(key, UUID::class.java)
-        @Suppress("DEPRECATION")
-        crimeId = requireArguments().getSerializable(ARG_CRIME_ID) as UUID
-    }
+    private val args: CrimeDetailFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,24 +37,22 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         val solvedBox  = view.findViewById<CheckBox>(R.id.crime_solved)
 
         val repo = CrimeRepository.get()
+        val crimeId = args.crimeId
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 repo.getCrime(crimeId).collect { crime ->
-                    if (crime != null) {
-                        titleField.setText(crime.title)
-                        dateButton.text = crime.date.toString()
-                        solvedBox.isChecked = crime.isSolved
+                    crime?.let {
+                        if (titleField.text.toString() != it.title) {
+                            titleField.setText(it.title)
+                        }
+                        dateButton.text = it.date.toString()
+                        if (solvedBox.isChecked != it.isSolved) {
+                            solvedBox.isChecked = it.isSolved
+                        }
                     }
                 }
             }
-        }
-    }
-
-    companion object {
-        private const val ARG_CRIME_ID = "crime_id"
-        fun newInstance(id: UUID) = CrimeDetailFragment().apply {
-            arguments = Bundle().apply { putSerializable(ARG_CRIME_ID, id) }
         }
     }
 }
