@@ -10,12 +10,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import java.util.UUID
 import androidx.navigation.fragment.navArgs
+import androidx.core.widget.doOnTextChanged
 
 
 /**
@@ -28,6 +30,9 @@ import androidx.navigation.fragment.navArgs
 class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
 
     private val args: CrimeDetailFragmentArgs by navArgs()
+    private val vm: CrimeDetailViewModel by viewModels {
+        CrimeDetailViewModelFactory(args.crimeId)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,18 +46,25 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                repo.getCrime(crimeId).collect { crime ->
-                    crime?.let {
-                        if (titleField.text.toString() != it.title) {
-                            titleField.setText(it.title)
-                        }
-                        dateButton.text = it.date.toString()
-                        if (solvedBox.isChecked != it.isSolved) {
-                            solvedBox.isChecked = it.isSolved
-                        }
+                vm.crime.collect { crime ->
+                    crime ?: return@collect
+                    if (titleField.text.toString() != crime.title) {
+                        titleField.setText(crime.title)
+                    }
+                    dateButton.text = crime.date.toString()
+                    if (solvedBox.isChecked != crime.isSolved) {
+                        solvedBox.isChecked = crime.isSolved
                     }
                 }
             }
+        }
+
+        // Update Crimes
+        titleField.doOnTextChanged { text, _, _, _ ->
+            vm.updateCrime { it.copy(title = text.toString()) }
+        }
+        solvedBox.setOnCheckedChangeListener { _, checked ->
+            vm.updateCrime { it.copy(isSolved = checked) }
         }
     }
 }
