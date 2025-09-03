@@ -1,5 +1,6 @@
 package com.example.criminalintent
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -35,6 +36,8 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         val titleField = view.findViewById<EditText>(R.id.crime_title)
         val dateButton = view.findViewById<Button>(R.id.crime_date)
         val solvedBox  = view.findViewById<CheckBox>(R.id.crime_solved)
+        val sendReport = view.findViewById<Button>(R.id.send_report)
+        sendReport.setOnClickListener {vm.crime.value?.let { sendReport(buildCrimeReport(it))}}
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -58,5 +61,20 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         solvedBox.setOnCheckedChangeListener { _, checked ->
             vm.updateCrime { it.copy(isSolved = checked) }
         }
+    }
+
+    private fun buildCrimeReport(c: Crime): String {
+        val solvedStr = if (c.isSolved) "Solved" else "Unsolved"
+        val suspectStr = if (c.suspect.isNotBlank()) "Suspect: ${c.suspect}" else "No suspect"
+        return "Crime: ${c.title}\nDate: ${c.date}\nStatus: $solvedStr\n$suspectStr"
+    }
+
+    private fun sendReport(text: String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.report_subject))
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        startActivity(intent)
     }
 }
