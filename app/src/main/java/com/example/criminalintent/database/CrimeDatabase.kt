@@ -26,7 +26,7 @@ import com.example.criminalintent.Crime
  * It provides an abstract method `crimeDao()` which Room will implement to return an instance
  * of `CrimeDao`. This DAO is then used to interact with the `Crime` table in the database.
  */
-@Database(entities = [Crime::class], version = 1, exportSchema = false)
+@Database(entities = [Crime::class], version = 2, exportSchema = false)
 @TypeConverters(CrimeTypeConverters::class)
 abstract class CrimeDatabase : RoomDatabase() {
     /**
