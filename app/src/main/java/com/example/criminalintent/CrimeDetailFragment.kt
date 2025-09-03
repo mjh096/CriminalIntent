@@ -68,8 +68,9 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         currentPhotoView   = photoView
 
         // Enable/disable choose suspect based on availability
-        val probeIntent = pickContact.contract.createIntent(requireContext(), null)
-        val canHandle = probeIntent.resolveActivity(requireContext().packageManager) != null
+        val probe = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+        val canHandle = requireContext().packageManager
+            .resolveActivity(probe, 0) != null
         chooseSuspect.isEnabled = canHandle
         chooseSuspect.setOnClickListener { pickContact.launch(null) }
 

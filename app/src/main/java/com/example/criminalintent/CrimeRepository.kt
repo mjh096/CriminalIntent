@@ -33,7 +33,7 @@ class CrimeRepository private constructor(context: Context) {
     ).build()
 
     private val crimeDao = db.crimeDao()
-
+    fun addCrime(crime: Crime) {ioScope.launch { crimeDao.addCrime(crime) }}
     fun getCrimes(): Flow<List<Crime>> = crimeDao.getCrimes()
     fun getCrime(id: UUID): Flow<Crime?> = crimeDao.getCrime(id)
     fun updateCrime(crime: Crime) {ioScope.launch {crimeDao.updateCrime(crime)}}
