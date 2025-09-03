@@ -2,4 +2,10 @@
     <string name="app_name">Criminal Intent</string>
     <string name="crime_title">Crime Title</string>
     <string name="solved">Solved</string>
+    <string name="choose_suspect">Choose Suspect</string>
+    <string name="send_report">Send Crime Report</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="photo_desc">Crime photo</string>
+    <string name="report_subject">Crime Report</string>
+
 </resources>
