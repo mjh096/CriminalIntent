@@ -1,6 +1,7 @@
 package com.example.criminalintent
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -17,21 +19,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.launch
+import java.io.File
+import androidx.core.content.FileProvider
 
-
-/**
- * This fragment displays the details of a single crime and allows the user to edit them.
- * It retrieves the crime data from the repository based on the crime ID passed as an argument
- * and populates the UI elements with the crime's details.
- *
- * The fragment observes changes to the crime data and updates the UI accordingly.
- */
 class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
 
     private val args: CrimeDetailFragmentArgs by navArgs()
     private val vm: CrimeDetailViewModel by viewModels {
         CrimeDetailViewModelFactory(args.crimeId)
     }
+
+    private var currentPhotoView: ImageView? = null
+    private var latestUri: Uri? = null
 
     private val pickContact = registerForActivityResult(
         ActivityResultContracts.PickContact()
@@ -43,22 +42,47 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         }
     }
 
+    private val takePicture = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            latestUri?.let { uri ->
+                // Persist the file name to the crime and show the image
+                val fileName = uri.lastPathSegment ?: "photo.jpg"
+                vm.updateCrime { it.copy(photoFileName = fileName) }
+                currentPhotoView?.let { loadPhotoInto(it, uri) }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val titleField = view.findViewById<EditText>(R.id.crime_title)
-        val dateButton = view.findViewById<Button>(R.id.crime_date)
-        val solvedBox  = view.findViewById<CheckBox>(R.id.crime_solved)
-        val sendReport = view.findViewById<Button>(R.id.send_report)
-        val chooseSuspect = view.findViewById<Button>(R.id.choose_suspect)
+        val titleField     = view.findViewById<EditText>(R.id.crime_title)
+        val dateButton     = view.findViewById<Button>(R.id.crime_date)
+        val solvedBox      = view.findViewById<CheckBox>(R.id.crime_solved)
+        val sendReport     = view.findViewById<Button>(R.id.send_report)
+        val chooseSuspect  = view.findViewById<Button>(R.id.choose_suspect)
+        val cameraBtn      = view.findViewById<Button>(R.id.camera)
+        val photoView      = view.findViewById<ImageView>(R.id.photo)
+        currentPhotoView   = photoView
+
+        // Enable/disable choose suspect based on availability
         val probeIntent = pickContact.contract.createIntent(requireContext(), null)
         val canHandle = probeIntent.resolveActivity(requireContext().packageManager) != null
         chooseSuspect.isEnabled = canHandle
-
-        chooseSuspect.setOnClickListener { pickContact.launch(null)}
+        chooseSuspect.setOnClickListener { pickContact.launch(null) }
 
         sendReport.setOnClickListener {
             vm.crime.value?.let { sendReport(buildCrimeReport(it)) }
+        }
+
+        // Camera button
+        cameraBtn.setOnClickListener {
+            val fileName = "IMG_${args.crimeId}.jpg"
+            val uri = getPhotoUri(fileName)
+            latestUri = uri
+            takePicture.launch(uri)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -74,14 +98,25 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
                         solvedBox.isChecked = crime.isSolved
                     }
 
-                    // Reflect suspect on the button
-                    chooseSuspect.text = if (crime.suspect.isNotBlank())
-                        crime.suspect
+                    // Add Suspect Contact
+                    val suspect = crime.suspect?.takeIf { it.isNotBlank() }.orEmpty()
+                    chooseSuspect.text = if (suspect.isNotEmpty())
+                        suspect
                     else
                         getString(R.string.choose_suspect)
+
+                    // Load Photo if available
+                    val photoName = crime.photoFileName?.takeIf { it.isNotBlank() }
+                    if (photoName != null) {
+                        val uri = getPhotoUri(photoName)
+                        loadPhotoInto(photoView, uri)
+                    } else {
+                        photoView.setImageDrawable(null)
+                    }
                 }
             }
         }
+
 
         // UI → VM updates
         titleField.doOnTextChanged { text, _, _, _ ->
@@ -92,6 +127,34 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
         }
     }
 
+    private fun loadPhotoInto(imageView: ImageView, uri: Uri) {
+        imageView.post {
+            val input = requireContext().contentResolver.openInputStream(uri) ?: return@post
+            val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeStream(input, null, opts)
+            input.close()
+
+            val targetW = imageView.width.coerceAtLeast(1)
+            val targetH = imageView.height.coerceAtLeast(1)
+            val scale = maxOf(1, minOf(opts.outWidth / targetW, opts.outHeight / targetH))
+
+            val input2 = requireContext().contentResolver.openInputStream(uri) ?: return@post
+            val opts2 = BitmapFactory.Options().apply { inSampleSize = scale }
+            val bmp = BitmapFactory.decodeStream(input2, null, opts2)
+            input2.close()
+            imageView.setImageBitmap(bmp)
+        }
+    }
+
+    private fun getPhotoUri(fileName: String): Uri {
+        val imagesDir = File(requireContext().filesDir, "images").apply { mkdirs() }
+        val file = File(imagesDir, fileName)
+        return FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            file
+        )
+    }
 
     private fun readContactName(uri: Uri): String? {
         val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
