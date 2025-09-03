@@ -12,6 +12,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import java.util.Date
+import java.util.UUID
 
 /**
  * A fragment that displays a list of crimes.
@@ -45,5 +52,34 @@ class CrimeListFragment : Fragment(R.layout.fragment_crime_list) {
                 }
             }
         }
+
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.fragment_crime_list, menu)
+            }
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                return when (item.itemId) {
+                    R.id.menu_new_crime -> {
+                        onAddNewCrime()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun onAddNewCrime() {
+        val newCrime = Crime(
+            id = UUID.randomUUID(),
+            title = "",
+            date = Date(),
+            isSolved = false
+        )
+        vm.addCrime(newCrime)
+
+        // Navigate to detail for editing. You already use Safe Args:
+        val action = CrimeListFragmentDirections.showCrimeDetail(newCrime.id)
+        findNavController().navigate(action)
     }
 }

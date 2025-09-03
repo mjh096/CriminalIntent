@@ -28,4 +28,5 @@ class CrimeListViewModel : ViewModel() {
                 started = SharingStarted.Eagerly,
                 initialValue = emptyList()
             )
+    fun addCrime(crime: Crime) = repo.addCrime(crime)
 }
