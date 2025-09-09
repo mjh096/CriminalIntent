@@ -86,6 +86,15 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
             takePicture.launch(uri)
         }
 
+        // DateTime Button
+        dateButton.setOnClickListener {
+            val crime = vm.crime.value ?: return@setOnClickListener
+            showDateTimePicker(crime.date) { newDate ->
+                vm.updateCrime { it.copy(date = newDate) }
+                dateButton.text = formatDateTime(newDate)
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.crime.collect { crime ->
@@ -94,7 +103,7 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
                     if (titleField.text.toString() != crime.title) {
                         titleField.setText(crime.title)
                     }
-                    dateButton.text = crime.date.toString()
+                    dateButton.text = formatDateTime(crime.date)
                     if (solvedBox.isChecked != crime.isSolved) {
                         solvedBox.isChecked = crime.isSolved
                     }
@@ -182,5 +191,49 @@ class CrimeDetailFragment : Fragment(R.layout.fragment_crime_detail) {
             putExtra(Intent.EXTRA_TEXT, text)
         }
         startActivity(intent)
+    }
+
+    private fun formatDateTime(d: java.util.Date): String {
+        val df = java.text.DateFormat.getDateTimeInstance(
+            java.text.DateFormat.MEDIUM,
+            java.text.DateFormat.SHORT
+        )
+        return df.format(d)
+    }
+
+    private fun showDateTimePicker(
+        current: java.util.Date,
+        onPicked: (java.util.Date) -> Unit
+    ) {
+        val cal = java.util.Calendar.getInstance().apply { time = current }
+
+        val dp = android.app.DatePickerDialog(
+            requireContext(),
+            { _, y, m, d ->
+                cal.set(java.util.Calendar.YEAR, y)
+                cal.set(java.util.Calendar.MONTH, m)
+                cal.set(java.util.Calendar.DAY_OF_MONTH, d)
+
+                // After date, ask for time
+                val hour = cal.get(java.util.Calendar.HOUR_OF_DAY)
+                val min  = cal.get(java.util.Calendar.MINUTE)
+                val tp = android.app.TimePickerDialog(
+                    requireContext(),
+                    { _, h, mm ->
+                        cal.set(java.util.Calendar.HOUR_OF_DAY, h)
+                        cal.set(java.util.Calendar.MINUTE, mm)
+                        cal.set(java.util.Calendar.SECOND, 0)
+                        cal.set(java.util.Calendar.MILLISECOND, 0)
+                        onPicked(cal.time)
+                    },
+                    hour, min, true
+                )
+                tp.show()
+            },
+            cal.get(java.util.Calendar.YEAR),
+            cal.get(java.util.Calendar.MONTH),
+            cal.get(java.util.Calendar.DAY_OF_MONTH)
+        )
+        dp.show()
     }
 }
